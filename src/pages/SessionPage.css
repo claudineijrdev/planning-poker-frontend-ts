@@ -1,0 +1,58 @@
+.session-page {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.session-content {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+.main-content {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  background-color: #f5f5f5;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  font-size: 1.2rem;
+  color: #666;
+}
+
+.error {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  font-size: 1.2rem;
+  color: #f44336;
+}
+
+.no-card-selected {
+  text-align: center;
+  padding: 40px;
+  color: #666;
+}
+
+.create-card-button {
+  margin-top: 20px;
+  padding: 12px 24px;
+  background-color: #2196f3;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+  transition: background-color 0.2s;
+}
+
+.create-card-button:hover {
+  background-color: #1976d2;
+} 

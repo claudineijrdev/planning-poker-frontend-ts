@@ -1,20 +1,15 @@
 import React from 'react';
+import { VotingSectionProps } from '../../types';
 import './styles.css';
 
 const SCORE_OPTIONS = [1, 2, 3, 5, 8, 13, 21] as const;
 
-interface VotingSectionProps {
-  selectedScore: number | null;
-  onSelectScore: (score: number) => void;
-  onVote: () => void;
-  onClose: () => void;
-}
-
-const VotingSection: React.FC<VotingSectionProps> = ({ 
-  selectedScore, 
-  onSelectScore, 
-  onVote, 
-  onClose 
+const VotingSection: React.FC<VotingSectionProps> = ({
+  selectedScore,
+  onSelectScore,
+  onVote,
+  onClose,
+  isOwner
 }) => {
   const handleVote = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -41,7 +36,7 @@ const VotingSection: React.FC<VotingSectionProps> = ({
         ))}
       </div>
       <div className="action-buttons">
-        <button 
+        <button
           type="button"
           className="vote-action-button"
           onClick={handleVote}
@@ -49,13 +44,15 @@ const VotingSection: React.FC<VotingSectionProps> = ({
         >
           Votar
         </button>
-        <button 
-          type="button"
-          className="close-voting-button"
-          onClick={handleClose}
-        >
-          Fechar Votação
-        </button>
+        {isOwner && (
+          <button
+            type="button"
+            className="close-voting-button"
+            onClick={handleClose}
+          >
+            Fechar Votação
+          </button>
+        )}
       </div>
     </div>
   );

@@ -9,7 +9,8 @@ const Card: React.FC<CardProps> = ({
   onVote, 
   onClose, 
   selectedScore, 
-  onSelectScore 
+  onSelectScore,
+  isOwner
 }) => {
   return (
     <div className="card">
@@ -25,6 +26,7 @@ const Card: React.FC<CardProps> = ({
             onSelectScore={onSelectScore}
             onVote={() => onVote(card.id)}
             onClose={() => onClose(card.id)}
+            isOwner={isOwner}
           />
         ) : (
           <ResultsSection card={card} />
