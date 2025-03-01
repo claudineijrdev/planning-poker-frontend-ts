@@ -38,6 +38,7 @@ const SessionChoice: React.FC = () => {
       toast.success('Sessão criada com sucesso!');
     } catch (error) {
       toast.error('Erro ao criar sessão. Tente novamente.');
+      console.error('Erro ao criar sessão:', error);
     }
   };
 

@@ -30,7 +30,7 @@ const Sidebar: React.FC<SidebarProps> = ({
       </div>
       <div className="sidebar-footer">
         <button className="new-voting-button" onClick={onNewVoting}>
-          Nova Votação
+          Criar novo Card
         </button>
         <button
           className="reset-all-button"

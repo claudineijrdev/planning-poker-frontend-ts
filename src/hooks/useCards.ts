@@ -30,7 +30,11 @@ export const useCards = ({ sessionId, userId }: UseCardsProps) => {
       // Atualiza o card atual se ele existir nos novos cards
       if (currentCard) {
         const updatedCurrentCard = data.cards?.find(c => c.id === currentCard.id);
-        setCurrentCard(updatedCurrentCard || null);
+        if (!updatedCurrentCard) {
+          setCurrentCard(null);
+        } else if (JSON.stringify(updatedCurrentCard) !== JSON.stringify(currentCard)) {
+          setCurrentCard(updatedCurrentCard);
+        }
       }
     } catch (err) {
       toast.error('Erro ao carregar os cards');
@@ -38,26 +42,29 @@ export const useCards = ({ sessionId, userId }: UseCardsProps) => {
     } finally {
       setLoading(false);
     }
-  }, [sessionId, currentCard]);
+  }, [sessionId]);
 
   useEffect(() => {
     loadCards();
   }, [loadCards]);
 
-  const selectCard = (card: Card) => {
-    setCurrentCard(card);
+  const selectCard = useCallback((card: Card) => {
+    setCurrentCard(prev => {
+      if (prev?.id === card.id) return prev;
+      return card;
+    });
     setSelectedScore(null);
-  };
+  }, []);
 
-  const selectScore = (score: number) => {
+  const selectScore = useCallback((score: number) => {
     setSelectedScore(score);
-  };
+  }, []);
 
   const vote = async (cardId: string) => {
     if (!selectedScore || !userId || !sessionId) return;
 
     try {
-      const response = await fetch(`http://localhost:3001/sessions/${sessionId}/cards/${cardId}/vote`, {
+      const response = await fetch(`http://localhost:3001/cards/${cardId}/vote`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -68,9 +75,16 @@ export const useCards = ({ sessionId, userId }: UseCardsProps) => {
 
       if (!response.ok) throw new Error('Erro ao votar');
       
-      loadCards();
+      const updatedCard = await response.json();
+      setCards(prev => prev.map(c => c.id === cardId ? updatedCard : c));
+      if (currentCard?.id === cardId) {
+        setCurrentCard(updatedCard);
+      }
       setSelectedScore(null);
       toast.success('Voto registrado com sucesso!');
+      
+      // Atualiza os dados após um pequeno delay
+      setTimeout(loadCards, 500);
     } catch (err) {
       toast.error('Erro ao registrar voto');
     }
@@ -80,7 +94,7 @@ export const useCards = ({ sessionId, userId }: UseCardsProps) => {
     if (!userId || !sessionId) return;
 
     try {
-      const response = await fetch(`http://localhost:3001/sessions/${sessionId}/cards/${cardId}/close`, {
+      const response = await fetch(`http://localhost:3001/cards/${cardId}/close`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -90,7 +104,11 @@ export const useCards = ({ sessionId, userId }: UseCardsProps) => {
 
       if (!response.ok) throw new Error('Erro ao fechar votação');
       
-      loadCards();
+      const updatedCard = await response.json();
+      setCards(prev => prev.map(c => c.id === cardId ? updatedCard : c));
+      if (currentCard?.id === cardId) {
+        setCurrentCard(updatedCard);
+      }
       toast.success('Votação encerrada com sucesso!');
     } catch (err) {
       toast.error('Erro ao encerrar votação');
@@ -123,9 +141,12 @@ export const useCards = ({ sessionId, userId }: UseCardsProps) => {
       }
       
       const newCard = await response.json();
-      loadCards();
+      setCards(prev => [...prev, newCard]);
       setCurrentCard(newCard);
       toast.success('Card criado com sucesso!');
+      
+      // Atualiza os dados após um pequeno delay
+      setTimeout(loadCards, 500);
     } catch (err) {
       if (err instanceof Error) {
         toast.error(err.message);
@@ -149,10 +170,12 @@ export const useCards = ({ sessionId, userId }: UseCardsProps) => {
 
       if (!response.ok) throw new Error('Erro ao resetar votações');
       
-      loadCards();
       setCurrentCard(null);
       setSelectedScore(null);
       toast.success('Todas as votações foram resetadas!');
+      
+      // Atualiza os dados após um pequeno delay
+      setTimeout(loadCards, 500);
     } catch (err) {
       toast.error('Erro ao resetar votações');
     }
@@ -170,5 +193,6 @@ export const useCards = ({ sessionId, userId }: UseCardsProps) => {
     closeVoting,
     createCard,
     resetAllVotings,
+    loadCards, // Exportando loadCards para permitir atualizações manuais
   };
 }; 

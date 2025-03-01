@@ -24,7 +24,7 @@ const NewVotingCard: React.FC<NewVotingCardProps> = ({ onSubmit, onCancel }) => 
   return (
     <div className="new-voting-card">
       <div className="card-header">
-        <h2>Nova Votação</h2>
+        <h2>Criar novo Card</h2>
       </div>
       <form onSubmit={handleSubmit}>
         <div className="form-group">
@@ -54,7 +54,7 @@ const NewVotingCard: React.FC<NewVotingCardProps> = ({ onSubmit, onCancel }) => 
             Cancelar
           </button>
           <button type="submit" className="submit-button">
-            Criar Votação
+            Criar Novo Card
           </button>
         </div>
       </form>
