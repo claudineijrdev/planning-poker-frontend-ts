@@ -7,7 +7,8 @@ const Sidebar: React.FC<SidebarProps> = ({
   currentCard, 
   onSelectCard, 
   onResetAllVotings, 
-  onNewVoting 
+  onNewVoting,
+  isOwner
 }) => {
   const hasClosedCards = cards.some(card => card.closed);
 
@@ -29,16 +30,20 @@ const Sidebar: React.FC<SidebarProps> = ({
         ))}
       </div>
       <div className="sidebar-footer">
-        <button className="new-voting-button" onClick={onNewVoting}>
-          Criar novo Card
-        </button>
-        <button
-          className="reset-all-button"
-          onClick={onResetAllVotings}
-          disabled={!hasClosedCards}
-        >
-          Resetar Votações
-        </button>
+        {isOwner && (
+          <>
+            <button className="new-voting-button" onClick={onNewVoting}>
+              Criar novo Card
+            </button>
+            <button
+              className="reset-all-button"
+              onClick={onResetAllVotings}
+              disabled={!hasClosedCards}
+            >
+              Resetar Votações
+            </button>
+          </>
+        )}
       </div>
     </div>
   );

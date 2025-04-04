@@ -1,16 +1,27 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useUser } from '../contexts/UserContext';
 import { useCards } from '../hooks/useCards';
 import Header from '../components/Header';
 import Sidebar from '../components/Sidebar';
 import Card from '../components/Card';
 import NewVotingCard from '../components/NewVotingCard';
+import { SessionStatus } from '../components/SessionStatus';
 import './SessionPage.css';
 
-const SessionPage: React.FC = () => {
+export const SessionPage: React.FC = () => {
   const navigate = useNavigate();
-  const { username, userId, sessionId, isOwner, clearSession } = useUser();
+  const { sessionId: urlSessionId } = useParams<{ sessionId: string }>();
+  const { 
+    username, 
+    userId,
+    sessionId, 
+    setSessionId, 
+    isConnected, 
+    sendMessage,
+    role,
+  } = useUser();
+  const isOwner = role === 'OWNER';
   const [showNewVoting, setShowNewVoting] = useState(false);
 
   const {
@@ -27,8 +38,15 @@ const SessionPage: React.FC = () => {
     resetAllVotings,
   } = useCards({ sessionId, userId });
 
+  // Atualiza o sessionId se vier da URL
+  useEffect(() => {
+    if (urlSessionId && (!sessionId || sessionId !== urlSessionId)) {
+      setSessionId(urlSessionId);
+    }
+  }, [urlSessionId, sessionId, setSessionId]);
+
   // Redireciona para home se não tiver username ou sessionId
-  React.useEffect(() => {
+  useEffect(() => {
     if (!username || !sessionId) {
       navigate('/');
     }
@@ -37,6 +55,18 @@ const SessionPage: React.FC = () => {
   const handleCreateCard = async (data: { title: string; description: string }) => {
     await createCard(data.title, data.description);
     setShowNewVoting(false);
+  };
+
+  // Exemplo de envio de mensagem para o servidor
+  const handleSendMessage = () => {
+    if (isConnected) {
+      sendMessage({
+        type: 'user_action',
+        action: 'vote',
+        value: '5',
+        userId: username
+      });
+    }
   };
 
   if (loading) {
@@ -50,6 +80,7 @@ const SessionPage: React.FC = () => {
   return (
     <div className="session-page">
       <Header />
+      <SessionStatus />
       <div className="session-content">
         <Sidebar
           cards={cards}
